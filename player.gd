@@ -1,50 +1,59 @@
 extends CharacterBody2D
 
-const ACCELERATION = 1000
-const FRICTION = 1000
-const SPEED = 100.0
-const JUMP_VELOCITY = -300.0
+@export var movement_data: PlayerMovementData
 
-var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
-var has_jumped = false
+var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
+var has_jumped: bool = false
 
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var coyote_jump_timer: Timer = $CoyoteJumpTimer
 
 func _physics_process(delta: float) -> void:
-	# handle gravity
-	if not is_on_floor():
-		velocity.y += gravity * delta
+	var direction: float = Input.get_axis("left", "right")
 
- # handle jump
-	if is_on_floor() or coyote_jump_timer.time_left > 0.0 and not has_jumped:
-		if Input.is_action_just_pressed("ui_accept"):
-			velocity.y = JUMP_VELOCITY
-			has_jumped = true
-	if not is_on_floor():
-		if Input.is_action_just_released("ui_accept") and velocity.y < JUMP_VELOCITY / 2:
-			velocity.y = JUMP_VELOCITY / 2
-
-	# handle lateral movement
-	var direction := Input.get_axis("left", "right")
-	if direction:
-		velocity.x = move_toward(velocity.x, SPEED * direction, ACCELERATION * delta)
-	else:
-		velocity.x = move_toward(velocity.x, 0, FRICTION * delta)
-
+	apply_gravity(delta)
+	handle_jump()
+	handle_acceleration(direction, delta)
+	handle_friction(direction, delta)
+	apply_air_resistance(direction, delta)
 	update_animations(direction)
 
 	# handle coyote jump
-	var was_on_floor = is_on_floor()
+	var was_on_floor: bool = is_on_floor()
 	move_and_slide()
-	var just_left_ledge = was_on_floor and not is_on_floor() and velocity.y >= 0
+	var just_left_ledge: bool = was_on_floor and not is_on_floor() and velocity.y >= 0
 	if just_left_ledge:
 		coyote_jump_timer.start()
 
 	if is_on_floor():
 		has_jumped = false
 
-func update_animations(input_axis):
+func apply_gravity(delta: float) -> void:
+	if not is_on_floor():
+		velocity.y += gravity * movement_data.gravity_scale * delta
+
+func handle_jump() -> void:
+	if is_on_floor() or coyote_jump_timer.time_left > 0.0 and not has_jumped:
+		if Input.is_action_just_pressed("ui_accept"):
+			velocity.y = movement_data.jump_velocity
+			has_jumped = true
+	if not is_on_floor():
+		if Input.is_action_just_released("ui_accept") and velocity.y < movement_data.jump_velocity / 2:
+			velocity.y = movement_data.jump_velocity / 2
+
+func handle_acceleration(direction: float, delta: float) -> void:
+	if direction != 0:
+		velocity.x = move_toward(velocity.x, movement_data.speed * direction, movement_data.acceleration * delta)
+
+func handle_friction(direction: float, delta: float) -> void:
+	if direction == 0 and is_on_floor():
+		velocity.x = move_toward(velocity.x, 0, movement_data.friction * delta)
+
+func apply_air_resistance(direction: float, delta: float) -> void:
+	if direction == 0 and not is_on_floor():
+		velocity.x = move_toward(velocity.x, 0, movement_data.air_resistance * delta)
+
+func update_animations(input_axis: float) -> void:
 	if input_axis != 0:
 		animated_sprite_2d.flip_h = input_axis < 0
 		animated_sprite_2d.play("run")
