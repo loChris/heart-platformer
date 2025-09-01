@@ -6,6 +6,7 @@ const SPEED = 100.0
 const JUMP_VELOCITY = -300.0
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
+var has_jumped = false
 
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var coyote_jump_timer: Timer = $CoyoteJumpTimer
@@ -16,9 +17,10 @@ func _physics_process(delta: float) -> void:
 		velocity.y += gravity * delta
 
  # handle jump
-	if is_on_floor() or coyote_jump_timer.time_left > 0.0:
+	if is_on_floor() or coyote_jump_timer.time_left > 0.0 and not has_jumped:
 		if Input.is_action_just_pressed("ui_accept"):
 			velocity.y = JUMP_VELOCITY
+			has_jumped = true
 	if not is_on_floor():
 		if Input.is_action_just_released("ui_accept") and velocity.y < JUMP_VELOCITY / 2:
 			velocity.y = JUMP_VELOCITY / 2
@@ -38,6 +40,9 @@ func _physics_process(delta: float) -> void:
 	var just_left_ledge = was_on_floor and not is_on_floor() and velocity.y >= 0
 	if just_left_ledge:
 		coyote_jump_timer.start()
+
+	if is_on_floor():
+		has_jumped = false
 
 func update_animations(input_axis):
 	if input_axis != 0:
