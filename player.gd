@@ -5,6 +5,8 @@ const FRICTION = 1000
 const SPEED = 100.0
 const JUMP_VELOCITY = -300.0
 
+@onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
+
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
@@ -26,4 +28,15 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, FRICTION * delta)
 
+	update_animations(direction)
 	move_and_slide()
+
+func update_animations(input_axis):
+	if input_axis != 0:
+		animated_sprite_2d.flip_h = input_axis < 0
+		animated_sprite_2d.play("run")
+	else:
+		animated_sprite_2d.play("idle")
+
+	if not is_on_floor():
+		animated_sprite_2d.play("jump")
