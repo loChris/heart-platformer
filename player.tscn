@@ -99,3 +99,6 @@ frame_progress = 0.524993
 
 [node name="CoyoteJumpTimer" type="Timer" parent="."]
 wait_time = 0.1
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, -32)
