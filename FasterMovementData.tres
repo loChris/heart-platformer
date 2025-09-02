@@ -8,4 +8,6 @@ acceleration = 1500
 friction = 1000
 speed = 200.0
 jump_velocity = -350.0
+gravity_scale = 0.8
+air_resistance = 1.0
 metadata/_custom_type_script = "uid://wxvnngg8lufi"
