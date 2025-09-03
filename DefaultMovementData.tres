@@ -4,10 +4,11 @@
 
 [resource]
 script = ExtResource("1_arto2")
-acceleration = 1000
-friction = 1000
+acceleration = 1000.0
+friction = 1000.0
 speed = 100.0
 jump_velocity = -250.0
 gravity_scale = 0.8
 air_resistance = 1.0
+air_acceleration = 400.0
 metadata/_custom_type_script = "uid://wxvnngg8lufi"

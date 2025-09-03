@@ -42,7 +42,7 @@ func handle_jump() -> void:
 		if Input.is_action_just_pressed("ui_accept"):
 			velocity.y = movement_data.jump_velocity
 			has_jumped = true
-	if not is_on_floor():
+	elif not is_on_floor():
 		if Input.is_action_just_released("ui_accept") and velocity.y < movement_data.jump_velocity / 2:
 			velocity.y = movement_data.jump_velocity / 2
 		if Input.is_action_just_pressed("ui_accept") and air_jump:
