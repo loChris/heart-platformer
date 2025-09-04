@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://2ofk1shokdcr"]
+[gd_scene load_steps=15 format=3 uid="uid://2ofk1shokdcr"]
 
 [ext_resource type="Script" uid="uid://cr4u7xrdtss4k" path="res://player.gd" id="1_onrkg"]
 [ext_resource type="Resource" uid="uid://djhu2wfmb1vaa" path="res://DefaultMovementData.tres" id="2_i3pqv"]
@@ -81,7 +81,11 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i3pqv"]
+size = Vector2(4, 13)
+
 [node name="Player" type="CharacterBody2D"]
+collision_layer = 2
 floor_constant_speed = true
 floor_snap_length = 3.0
 script = ExtResource("1_onrkg")
@@ -102,3 +106,15 @@ wait_time = 0.1
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(0, -32)
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
+
+[node name="HazardDetector" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HazardDetector"]
+position = Vector2(0, -7.5)
+shape = SubResource("RectangleShape2D_i3pqv")
+
+[connection signal="area_entered" from="HazardDetector" to="." method="_on_hazard_detector_area_entered"]
