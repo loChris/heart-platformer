@@ -8,6 +8,7 @@ var has_jumped: bool = false
 
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var coyote_jump_timer: Timer = $CoyoteJumpTimer
+@onready var starting_position: Vector2 = global_position
 
 func _physics_process(delta: float) -> void:
 	var direction: float = Input.get_axis("left", "right")
@@ -86,3 +87,7 @@ func update_animations(input_axis: float) -> void:
 
 	if not is_on_floor():
 		animated_sprite_2d.play("jump")
+
+
+func _on_hazard_detector_area_entered(area: Area2D) -> void:
+		global_position = starting_position
